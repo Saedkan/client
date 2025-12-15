@@ -1,42 +1,81 @@
 'use client';
 
-import { useMutation } from '@apollo/client/react';
-import { LOGIN } from '@/graphql/mutations';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useAuthStore } from '@/stores/auth.store';
+import { gql, useMutation } from '@apollo/client';
+import { useRouter } from 'next/navigation';
 
-export default function LoginPage() {
-  const loginStore = useAuthStore();
-  const [login] = useMutation(LOGIN);
+const LOGIN_MUTATION = gql`
+  mutation Login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      token
+      user {
+        id
+        name
+        email
+        role
+      }
+    }
+  }
+`;
 
-  const onSubmit = async (e: any) => {
-    e.preventDefault();
-    const form = e.target;
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
 
-    const res = await login({
-      variables: {
-        email: form.email.value,
-        password: form.password.value,
-      },
-    });
+type LoginInput = z.infer<typeof loginSchema>;
 
-    loginStore.login(
-      res.data.login.token,
-      res.data.login.user
-    );
+const LoginPage = () => {
+  const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const [loginMutation, { loading }] = useMutation(LOGIN_MUTATION);
+
+  const { register, handleSubmit, formState } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data: LoginInput) => {
+    try {
+      const res = await loginMutation({ variables: data });
+      const { token, user } = res.data.login;
+      setAuth(user, token);
+      router.push('/profile'); // редирект на профиль после логина
+    } catch (err: any) {
+      alert(err.message);
+    }
   };
 
   return (
-    <form onSubmit={onSubmit} className="max-w-sm mx-auto space-y-4">
-      <input name="email" placeholder="Email" className="border p-2 w-full" />
-      <input
-        name="password"
-        type="password"
-        placeholder="Password"
-        className="border p-2 w-full"
-      />
-      <button className="bg-black text-white px-4 py-2 w-full">
-        Login
-      </button>
-    </form>
+    <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
+      <h1 className="text-xl font-bold mb-4">Login</h1>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <input
+          {...register('email')}
+          placeholder="Email"
+          type="email"
+          className="w-full p-2 border rounded"
+        />
+        <input
+          {...register('password')}
+          placeholder="Password"
+          type="password"
+          className="w-full p-2 border rounded"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+      </form>
+    </div>
   );
-}
+};
+
+export default LoginPage;
+
