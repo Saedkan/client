@@ -5,7 +5,8 @@ import { useAuthStore } from '@/stores/auth.store';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { gql, useMutation } from '@apollo/client';
+import { gql } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 
 const UPDATE_PROFILE_MUTATION = gql`
   mutation UpdateProfile($name: String!, $password: String) {
@@ -13,6 +14,7 @@ const UPDATE_PROFILE_MUTATION = gql`
       id
       name
       email
+      role
     }
   }
 `;

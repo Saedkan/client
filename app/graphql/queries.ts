@@ -21,3 +21,34 @@ export const ME = gql`
     }
   }
 `;
+
+export const MY_ORDERS_QUERY = gql`
+  query MyOrders {
+    getMyOrders {
+      id
+      status
+      totalPrice
+      createdAt
+      items {
+        quantity
+        priceAtPurchase
+        manga {
+          id
+          title
+          coverImage
+        }
+      }
+    }
+  }
+`;
+
+export const SEARCH_MANGA_QUERY = gql`
+  query SearchManga($search: String) {
+    mangas(filter: { search: $search }) {
+      id
+      title
+      coverImage
+      price
+    }
+  }
+`;

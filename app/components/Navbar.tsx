@@ -27,6 +27,7 @@ export const Navbar = () => {
       </div>
 
       <div className="flex items-center space-x-4">
+        <Link href="/orders">Мои заказы</Link>
         <Link href="/cart" className="relative hover:underline">
           Cart
           {items.length > 0 && (

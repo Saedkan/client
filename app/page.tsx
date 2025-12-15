@@ -3,6 +3,7 @@
 import { useQuery } from '@apollo/client/react';
 import { GET_MANGAS } from '@/graphql/queries';
 import MangaCard from '@/components/MangaCard';
+import SearchBar from '@/components/SearchBar';
 
 export default function Home() {
   const { data, loading, error } = useQuery(GET_MANGAS);
@@ -13,10 +14,17 @@ export default function Home() {
   const mangas = data?.getMangas ?? [];
 
   return (
-    <div className="grid grid-cols-3 gap-4">
-      {mangas.map((manga: any) => (
-        <MangaCard key={manga.id} manga={manga} />
-      ))}
+    <div className="space-y-6">
+      {/* 🔍 ПОИСК */}
+      <SearchBar />
+
+      {/* 📚 КАТАЛОГ */}
+      <div className="grid grid-cols-3 gap-4">
+        {mangas.map((manga: any) => (
+          <MangaCard key={manga.id} manga={manga} />
+        ))}
+      </div>
     </div>
   );
 }
+

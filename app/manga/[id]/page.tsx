@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import useQuery from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { notFound } from 'next/navigation';
 import React from 'react';
 import { AddToCartButton } from '../../components/AddToCartButton';

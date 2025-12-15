@@ -1,7 +1,7 @@
 'use client';
 
 import { gql } from '@apollo/client';
-import useQuery from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import useSubscription from '@apollo/client';
 import React from 'react';
 import { OrderStatus } from '@/components/OrderStatus';
